@@ -22,5 +22,5 @@ Ways to run:
 Some useful resources to study:
 - https://www.dealii.org/ - The main website of deal.II
 - [deal.II tutorials](https://www.dealii.org/current/doxygen/deal.II/Tutorial.html) - Tutorials and Code documentation
-- The original [deal.II and p4est paper](https://dl.acm.org/doi/10.1145/2049673.2049678) [preprint](http://www.math.clemson.edu/~heister/preprints/BangerthBursteddeHeisterKronbichler_distributed.pdf)
+- The original [deal.II and p4est paper](https://dl.acm.org/doi/10.1145/2049673.2049678) ([preprint](http://www.math.clemson.edu/~heister/preprints/BangerthBursteddeHeisterKronbichler_distributed.pdf))
 - [Wolfgang's video lectures](https://www.math.colostate.edu/~bangerth/videos.html)
