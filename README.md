@@ -13,9 +13,10 @@ To run the examples you will need:
 - installed with dependencies p4est, Trilinos or PETSc
 - ParaView to visualize solutions
 
-Ways to run:
+Ways to run the tutorials:
 1. VirtualBox image at https://www.math.clemson.edu/~heister/dealvm/
 2. Docker images at https://github.com/dealii/docker-files (if you are experienced with using Docker)
+3. A manual installation, see [deal.II download page](https://www.dealii.org/download.html)
 
 ## Resources
 
