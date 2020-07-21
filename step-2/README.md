@@ -14,13 +14,18 @@ see step-1 and step-2 there for more information.
 
 ## Exercises
 
-1. Run the program:
+1. Get the source:
+```
+    git clone https://github.com/tjhei/dealii-p4est-tutorial
+```
+2. Run the program:
+```
     cmake .
     make
     ./step-2
-
-1. Look at the sparsity pattern and see how it changes when you change the
+```
+3. Look at the sparsity pattern and see how it changes when you change the
    finite element degree (set in the constructor of FE_Q).
 
-2. Do the visualization of the DoF and support points under [step-2 Possible
-   extensions](https://www.dealii.org/9.2.0/doxygen/deal.II/step_2.html#Possibleextensions).
+4. Do the visualization of the DoF and support points under [step-2 Possible
+   extensions](https://www.dealii.org/9.2.0/doxygen/deal.II/step_2.html#Possibleextensions). Maybe with a simpler mesh...
