@@ -34,3 +34,7 @@ step-40](https://www.dealii.org/current/doxygen/deal.II/step_40.html).
    namespace, that provides a simple templated c++ wrapper (for example for
    ``checksum``). Take a look at ``deal.II/distributed/p4est_wrappers.h``. Use
    ``do_something()`` to inspect the underlying p4est.
+
+5. Play with the ``n_groups`` variable (for example set it to 1) and run in
+   parallel. Read up on it in the documentation and see how the parallel I/O
+   works.
