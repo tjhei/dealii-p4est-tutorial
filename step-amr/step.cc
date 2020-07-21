@@ -36,26 +36,31 @@ namespace LA
 #endif
 } // namespace LA
 
-#include <deal.II/lac/vector.h>
-#include <deal.II/lac/affine_constraints.h>
+#include <deal.II/base/conditional_ostream.h>
+#include <deal.II/base/index_set.h>
+#include <deal.II/base/utilities.h>
+
+#include <deal.II/distributed/grid_refinement.h>
+#include <deal.II/distributed/p4est_wrappers.h>
+#include <deal.II/distributed/tria.h>
+
+#include <deal.II/dofs/dof_accessor.h>
+#include <deal.II/dofs/dof_handler.h>
+#include <deal.II/dofs/dof_tools.h>
+
+#include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_values.h>
 
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/tria_accessor.h>
 #include <deal.II/grid/tria_iterator.h>
-#include <deal.II/dofs/dof_handler.h>
-#include <deal.II/dofs/dof_accessor.h>
-#include <deal.II/dofs/dof_tools.h>
-#include <deal.II/fe/fe_values.h>
-#include <deal.II/fe/fe_q.h>
-#include <deal.II/numerics/vector_tools.h>
+
+#include <deal.II/lac/affine_constraints.h>
+#include <deal.II/lac/vector.h>
+
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/error_estimator.h>
-
-#include <deal.II/base/utilities.h>
-#include <deal.II/base/conditional_ostream.h>
-#include <deal.II/base/index_set.h>
-#include <deal.II/distributed/tria.h>
-#include <deal.II/distributed/grid_refinement.h>
+#include <deal.II/numerics/vector_tools.h>
 
 #include <fstream>
 #include <iostream>
@@ -70,12 +75,16 @@ namespace Step
   public:
     ExampleProblem();
 
-    void run();
+    void
+    run();
 
   private:
-    void setup_system();
-    void refine_grid();
-    void output_results(const unsigned int cycle);
+    void
+    setup_system();
+    void
+    refine_grid();
+    void
+    output_results(const unsigned int cycle);
 
     MPI_Comm mpi_communicator;
 
@@ -123,7 +132,8 @@ namespace Step
    * Distribute DoFs, create vectors, and create hanging node constraints.
    */
   template <int dim>
-  void ExampleProblem<dim>::setup_system()
+  void
+  ExampleProblem<dim>::setup_system()
   {
     TimerOutput::Scope t(computing_timer, "setup");
 
@@ -149,7 +159,8 @@ namespace Step
    * Refine 10% of the cells using an error estimator (gradient jump estimator)
    */
   template <int dim>
-  void ExampleProblem<dim>::refine_grid()
+  void
+  ExampleProblem<dim>::refine_grid()
   {
     TimerOutput::Scope t(computing_timer, "refine");
 
@@ -176,8 +187,8 @@ namespace Step
   class Solution : public Function<dim>
   {
   public:
-    virtual double value(const Point<dim> & p,
-                         const unsigned int component = 0) const override
+    virtual double
+    value(const Point<dim> &p, const unsigned int component = 0) const override
     {
       (void)component;
 
@@ -186,31 +197,66 @@ namespace Step
   };
 
 
+  /**
+   * Example functions to access the p4est_t / p8est_t
+   */
+  void
+  do_something(p4est_t *forest)
+  {
+    (void)forest;
+
+    std::cout << p4est_checksum(forest) << std::endl;
+  }
+
+  void
+  do_something(p8est_t *forest)
+  {
+    (void)forest;
+    std::cout << p8est_checksum(forest) << std::endl;
+  }
+
 
   /**
    * Write out the solution variable "u", the subdomain (MPI rank) in parallel
    * using MPI I/O into a VTK file format.
    */
   template <int dim>
-  void ExampleProblem<dim>::output_results(const unsigned int cycle)
+  void
+  ExampleProblem<dim>::output_results(const unsigned int cycle)
   {
     TimerOutput::Scope t(computing_timer, "output");
 
-    DataOut<dim> data_out;
-    data_out.attach_dof_handler(dof_handler);
-    data_out.add_data_vector(locally_relevant_solution, "u");
+    {
+      DataOut<dim> data_out;
+      data_out.attach_dof_handler(dof_handler);
+      data_out.add_data_vector(locally_relevant_solution, "u");
 
-    Vector<float> subdomain(triangulation.n_active_cells());
-    for (unsigned int i = 0; i < subdomain.size(); ++i)
-      subdomain(i) = triangulation.locally_owned_subdomain();
-    data_out.add_data_vector(subdomain, "subdomain");
+      Vector<float> subdomain(triangulation.n_active_cells());
+      for (unsigned int i = 0; i < subdomain.size(); ++i)
+        subdomain(i) = triangulation.locally_owned_subdomain();
+      data_out.add_data_vector(subdomain, "subdomain");
 
-    data_out.build_patches();
+      data_out.build_patches();
 
-    const unsigned int n_digits = 2;
-    const unsigned int n_groups = 8;
-    data_out.write_vtu_with_pvtu_record(
-      "./", "solution", cycle, mpi_communicator, n_digits, n_groups);
+      const unsigned int n_digits = 2;
+      const unsigned int n_groups = 8;
+      data_out.write_vtu_with_pvtu_record(
+        "./", "solution", cycle, mpi_communicator, n_digits, n_groups);
+    }
+
+    // This shows how to get direct access to the underlying p4est object:
+    {
+      typename dealii::internal::p4est::types<dim>::forest *forest =
+        const_cast<typename dealii::internal::p4est::types<dim>::forest *>(
+          triangulation.get_p4est());
+
+      unsigned int checksum =
+        dealii::internal::p4est::functions<dim>::checksum(forest);
+      pcout << "p4est checksum: " << checksum << std::endl;
+
+      // Direct access to p4est_t depending on dim. Uncomment to use:
+      // do_something(forest);
+    }
   }
 
 
@@ -219,7 +265,8 @@ namespace Step
    * The main run() function.
    */
   template <int dim>
-  void ExampleProblem<dim>::run()
+  void
+  ExampleProblem<dim>::run()
   {
     pcout << "Running with "
 #ifdef USE_PETSC_LA
@@ -228,7 +275,7 @@ namespace Step
           << "Trilinos"
 #endif
           << " on " << Utilities::MPI::n_mpi_processes(mpi_communicator)
-          << " MPI rank(s)..." << std::endl;
+          << " MPI rank(s) for dim=" << dim << std::endl;
 
     const unsigned int n_cycles = 8;
     for (unsigned int cycle = 0; cycle < n_cycles; ++cycle)
@@ -237,8 +284,7 @@ namespace Step
 
         if (cycle == 0)
           {
-            // GridGenerator::hyper_L(triangulation);
-            GridGenerator::hyper_ball(triangulation);
+            GridGenerator::hyper_L(triangulation);
             triangulation.refine_global(3);
           }
         else
@@ -270,7 +316,8 @@ namespace Step
 
 
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
   try
     {
@@ -279,7 +326,7 @@ int main(int argc, char *argv[])
 
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
 
-      ExampleProblem<2> problem;
+      ExampleProblem<3> problem;
       problem.run();
     }
   catch (std::exception &exc)
