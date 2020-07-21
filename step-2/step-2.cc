@@ -77,10 +77,9 @@ void make_grid(Triangulation<2> &triangulation)
 void visualize(Triangulation<2> &triangulation)
 {
      MappingManifold<2> mapping;
-     std::ofstream out("grid.vtk");
 
      DataOutBase::VtkFlags flags;
-     flags.write_higher_order_cells = true;
+     //flags.write_higher_order_cells = true;
 
      DataOut<2> data_out;
      data_out.set_flags(flags);
@@ -92,8 +91,16 @@ void visualize(Triangulation<2> &triangulation)
        vec[cell->active_cell_index()] = cell->subdomain_id();
      data_out.add_data_vector(vec,"subdomainid");
 
-     data_out.build_patches(mapping, 20, DataOut<2>::curved_inner_cells);
-     data_out.write_vtk(out);
+     {
+       data_out.build_patches(mapping);
+       std::ofstream out("grid.vtk");
+       data_out.write_vtk(out);
+     }
+     {
+       data_out.build_patches(mapping, 20, DataOut<2>::curved_inner_cells);
+       std::ofstream out("curved-grid.vtk");
+       data_out.write_vtk(out);
+     }
 }
 
 /**
@@ -138,8 +145,6 @@ void renumber_dofs(DoFHandler<2> &dof_handler)
 
 
 
-
-
 int main()
 {
   Triangulation<2> triangulation;
@@ -150,4 +155,6 @@ int main()
 
   distribute_dofs(dof_handler);
   renumber_dofs(dof_handler);
+
+  std::cout << "done." << std::endl;
 }
