@@ -26,5 +26,11 @@ step-40](https://www.dealii.org/current/doxygen/deal.II/step_40.html).
    namespace](https://www.dealii.org/9.2.0/doxygen/deal.II/namespaceGridGenerator.html)
    for inspiration. Further,
    [step-49](https://www.dealii.org/current/doxygen/deal.II/step_49.html)
-   documents advanced way to create and manipulate meshes.
+   documents advanced ways to create and manipulate meshes.
 
+4. Take a look at the ``do_something`` function and how (depending on
+   dimension ``dim``), you have access to the ``p4est_t``/``p8est_t``. For the
+   implementation in deal.II, we have the ``dealii::internal::p4est``
+   namespace, that provides a simple templated c++ wrapper (for example for
+   ``checksum``). Take a look at ``deal.II/distributed/p4est_wrappers.h``. Use
+   ``do_something()`` to inspect the underlying p4est.
