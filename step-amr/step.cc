@@ -204,15 +204,12 @@ namespace Step
   do_something(p4est_t *forest)
   {
     (void)forest;
-
-    std::cout << p4est_checksum(forest) << std::endl;
   }
 
   void
   do_something(p8est_t *forest)
   {
     (void)forest;
-    std::cout << p8est_checksum(forest) << std::endl;
   }
 
 
