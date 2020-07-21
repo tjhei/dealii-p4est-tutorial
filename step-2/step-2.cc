@@ -18,23 +18,25 @@
  */
 
 
+#include <deal.II/dofs/dof_handler.h>
+#include <deal.II/dofs/dof_renumbering.h>
+#include <deal.II/dofs/dof_tools.h>
+
+#include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/mapping_manifold.h>
+#include <deal.II/fe/mapping_q.h>
+
+#include <deal.II/grid/grid_generator.h>
+#include <deal.II/grid/grid_out.h>
+#include <deal.II/grid/grid_tools.h>
 #include <deal.II/grid/tria.h>
 #include <deal.II/grid/tria_accessor.h>
 #include <deal.II/grid/tria_iterator.h>
-#include <deal.II/grid/grid_generator.h>
 
-#include <deal.II/dofs/dof_handler.h>
-
-#include <deal.II/fe/fe_q.h>
-#include <deal.II/dofs/dof_tools.h>
-#include <deal.II/lac/sparse_matrix.h>
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
+#include <deal.II/lac/sparse_matrix.h>
 
-#include <deal.II/grid/grid_tools.h>
-#include <deal.II/dofs/dof_renumbering.h>
 #include <deal.II/numerics/data_out.h>
-#include <deal.II/fe/mapping_q.h>
-#include <deal.II/fe/mapping_manifold.h>
 
 #include <fstream>
 
@@ -71,36 +73,47 @@ void make_grid(Triangulation<2> &triangulation)
 }
 
 /**
- * This is a somewhat involved way to visualize with curved cells. Just outputting a grid
- * is obviously simpler.
+ * This is a somewhat involved way to visualize with curved cells. Just
+ * outputting a grid is obviously simpler.
  */
 void visualize(Triangulation<2> &triangulation)
 {
-     MappingManifold<2> mapping;
+  {
+    // simple svg output
+    std::ofstream out("grid-2.svg");
+    GridOut       grid_out;
+    grid_out.write_svg(triangulation, out);
+  }
 
-     DataOutBase::VtkFlags flags;
-     //flags.write_higher_order_cells = true;
+  {
+    // write a nicer vtk mesh with curved geometry
+    MappingManifold<2> mapping;
 
-     DataOut<2> data_out;
-     data_out.set_flags(flags);
-     data_out.attach_triangulation(triangulation);
+    DataOutBase::VtkFlags flags;
+    // Enabling this doesn't work in the VM
+    flags.write_higher_order_cells = false;
 
-     Vector<float> vec(triangulation.n_active_cells());
-     GridTools::partition_triangulation(3, triangulation);
-     for (auto &cell: triangulation.active_cell_iterators())
-       vec[cell->active_cell_index()] = cell->subdomain_id();
-     data_out.add_data_vector(vec,"subdomainid");
+    DataOut<2> data_out;
+    data_out.set_flags(flags);
+    data_out.attach_triangulation(triangulation);
 
-     {
-       data_out.build_patches(mapping);
-       std::ofstream out("grid.vtk");
-       data_out.write_vtk(out);
-     }
-     {
-       data_out.build_patches(mapping, 20, DataOut<2>::curved_inner_cells);
-       std::ofstream out("curved-grid.vtk");
-       data_out.write_vtk(out);
-     }
+    Vector<float> vec(triangulation.n_active_cells());
+    GridTools::partition_triangulation(3, triangulation);
+    for (auto &cell : triangulation.active_cell_iterators())
+      vec[cell->active_cell_index()] = cell->subdomain_id();
+    data_out.add_data_vector(vec, "subdomainid");
+
+    {
+      data_out.build_patches(mapping);
+      std::ofstream out("grid.vtk");
+      data_out.write_vtk(out);
+    }
+    {
+      data_out.build_patches(mapping, 20, DataOut<2>::curved_inner_cells);
+      std::ofstream out("curved-grid.vtk");
+      data_out.write_vtk(out);
+    }
+  }
 }
 
 /**
@@ -145,7 +158,8 @@ void renumber_dofs(DoFHandler<2> &dof_handler)
 
 
 
-int main()
+int
+main()
 {
   Triangulation<2> triangulation;
   make_grid(triangulation);
