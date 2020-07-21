@@ -1,7 +1,8 @@
 # step-2: Create and adapt a mesh and Finite Element spaces
 
-This example is based on [deal.II step-2](https://www.dealii.org/current/doxygen/deal.II/step_2.html). Please see
-step-1 and step-2 there for more information.
+This example is based on [deal.II
+step-2](https://www.dealii.org/current/doxygen/deal.II/step_2.html). Please
+see step-1 and step-2 there for more information.
 
 ## What it does
 
@@ -13,5 +14,13 @@ step-1 and step-2 there for more information.
 
 ## Exercises
 
-1. Look at the sparsity pattern and see how it changes when you change the finite element degree (set in the constructor of FE_Q).
-2. Do the visualization of the DoF and support points under [step-2 Possible extensions](https://www.dealii.org/9.2.0/doxygen/deal.II/step_2.html#Possibleextensions).
+1. Run the program:
+    cmake .
+    make
+    ./step-2
+
+1. Look at the sparsity pattern and see how it changes when you change the
+   finite element degree (set in the constructor of FE_Q).
+
+2. Do the visualization of the DoF and support points under [step-2 Possible
+   extensions](https://www.dealii.org/9.2.0/doxygen/deal.II/step_2.html#Possibleextensions).
