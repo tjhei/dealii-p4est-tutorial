@@ -14,3 +14,6 @@ This example is based on [deal.II step-40](https://www.dealii.org/current/doxyge
 
 1. Add text output that shows the number of locally owned cells and locally owned DoFs on each processor.
 
+2. Change the problem to something more interesting. For example, use the
+   right-hand side ``1`` on a complicated geometry. Maybe include a viscosity
+   jump?
