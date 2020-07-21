@@ -17,3 +17,8 @@ This example is based on [deal.II step-40](https://www.dealii.org/current/doxyge
 2. Change the problem to something more interesting. For example, use the
    right-hand side ``1`` on a complicated geometry. Maybe include a viscosity
    jump?
+
+3. If you are familiar with FEM, you can try the method of manufactured
+   solutions to confirm the correctness of the solver. See
+   [deal.II step-7](https://www.dealii.org/current/doxygen/deal.II/step_7.html).
+
