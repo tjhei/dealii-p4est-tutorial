@@ -5,6 +5,9 @@ goal is to teach basics about the [deal.II library](https://dealii.org) and
 how it interfaces with [p4est](http://p4est.org). For more information, please
 see the tutorial website at http://www.p4est.org/school.html.
 
+## Recordings
+
+The lectures, demos, and Q&A are now available at https://www.youtube.com/watch?v=K2xjCsXnfYI
 
 ## Prerequisites
 
